@@ -1,0 +1,9 @@
+{
+  "name": "zonterone-skills",
+  "displayName": "karpathy-guidelines",
+  "description": "Behavioral guidelines that reduce common LLM coding mistakes: think before coding, simplicity first, surgical changes, goal-driven execution.",
+  "author": { "name": "zonterone" },
+  "repository": "https://github.com/zonterone/cc-batteries",
+  "license": "MIT",
+  "homepage": "https://github.com/multica-ai/andrej-karpathy-skills"
+}

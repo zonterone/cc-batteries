@@ -1,0 +1,8 @@
+{
+  "name": "zonterone-skills",
+  "displayName": "neverthrow",
+  "description": "Opinionated project convention for error handling with the neverthrow library. Enable it per project.",
+  "author": { "name": "zonterone" },
+  "repository": "https://github.com/zonterone/cc-batteries",
+  "license": "MIT"
+}

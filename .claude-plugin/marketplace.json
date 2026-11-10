@@ -1,0 +1,13 @@
+{
+  "name": "zonterone-cc-batteries",
+  "owner": { "name": "zonterone" },
+  "description": "A collection of Claude Code skills: coding guidelines, deep code review, code style and library conventions.",
+  "plugins": [
+    { "name": "ts-coding", "source": "./plugins/ts-coding" },
+    { "name": "ts-code-style", "source": "./skills/ts-code-style" },
+    { "name": "karpathy-guidelines", "source": "./skills/karpathy-guidelines" },
+    { "name": "deep-code-review", "source": "./skills/deep-code-review" },
+    { "name": "neverthrow", "source": "./skills/neverthrow" },
+    { "name": "ts-pattern", "source": "./skills/ts-pattern" }
+  ]
+}

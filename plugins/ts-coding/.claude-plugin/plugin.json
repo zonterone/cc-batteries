@@ -1,0 +1,8 @@
+{
+  "name": "ts-coding",
+  "description": "Bundle that installs ts-code-style, karpathy-guidelines and deep-code-review.",
+  "author": { "name": "zonterone" },
+  "repository": "https://github.com/zonterone/cc-batteries",
+  "license": "MIT",
+  "dependencies": ["ts-code-style", "karpathy-guidelines", "deep-code-review"]
+}
