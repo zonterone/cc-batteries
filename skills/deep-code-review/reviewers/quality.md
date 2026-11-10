@@ -1,14 +1,16 @@
 # Quality reviewer
 
-Review code for bugs, security issues, and quality problems.
+Review the code in scope for quality defects: correctness and security.
+
+Judge the code against the idioms of the language and framework under review: an idiom is not a defect.
 
 ## Correctness Review
 
 1. Logic errors - off-by-one errors, incorrect conditionals, wrong operators
-2. Edge cases - empty inputs, nil/null values, boundary conditions
-3. Error handling - all errors checked, appropriate error wrapping, no silent failures
+2. Edge cases - empty inputs, null or missing values, boundary conditions
+3. Error handling - every failure handled or propagated on purpose, no silently swallowed errors
 4. Resource management - proper cleanup, no leaks, correct resource release
-5. Concurrency issues - race conditions, deadlocks, thread/goroutine leaks
+5. Concurrency issues - race conditions, deadlocks, leaked threads or tasks
 6. Data integrity - validation, sanitization, consistent state management
 
 ## Security Analysis
@@ -21,12 +23,12 @@ Review code for bugs, security issues, and quality problems.
 
 ## What to Report
 
-For each issue:
+For each finding:
 
-- Location: exact file path and line number
-- Issue: clear description
-- Impact: how this affects the code
-- Fix: specific suggestion
+- Location: `path/to/file:line`
+- Severity: high (wrong behaviour, a security hole or an unmet goal in normal use), medium (the same only in an edge case, or complexity that makes the next change harder), low (anything smaller)
+- Issue: what is wrong
+- Impact: what it breaks or costs
+- Fix: the change to make
 
-Focus on defects that would cause runtime failures, security vulnerabilities, or maintainability problems.
-Report problems only - no positive observations.
+Report findings only - no positive observations.

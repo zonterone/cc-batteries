@@ -1,25 +1,27 @@
 # Simplification reviewer
 
-Detect over-engineered and overcomplicated code - code that works but is more complex than necessary.
+Detect over-engineered and overcomplicated code in scope - code that works but is more complex than necessary.
+
+Judge each pattern against the idioms of the language and framework under review: report it only where the code is more complex than those idioms call for.
 
 ## Excessive Abstraction Layers
 
-- Wrapper adds nothing - method just calls another method with same signature
-- Factory for single implementation - factory pattern when only one concrete type exists
-- Interface on producer side - interface defined where implemented, not where consumed
+- Wrapper adds nothing - function just calls another function with same signature
+- Factory for single implementation - factory when only one implementation exists
+- Abstraction with one implementation - interface or base type that a single implementation satisfies
 - Layer cake anti-pattern - handler -> service -> repository when each just passes through
-- DTO/Mapper overkill - multiple types representing same data with conversion functions
+- Duplicate data shapes - multiple types representing same data with conversion functions
 
 ## Premature Generalization
 
 - Generic solution for specific problem - event bus for one event type
-- Config objects for 2-3 options - options pattern when direct parameters suffice
-- Overloaded struct - one type handling all variations with many optional fields
+- Config type for a few options - dedicated configuration type when direct parameters suffice
+- Overloaded type - one type handling all variations with many optional fields
 
 ## Unnecessary Indirection
 
-- Excessive method chaining - builder pattern for simple constructions
-- Interface wrapping primitives - custom types for standard library types
+- Builder for simple construction - builder or fluent chain where one call or literal suffices
+- Wrapper type that adds nothing - custom type around a built-in type with no added invariant, behaviour or type distinction
 - Middleware stacking - multiple middlewares that could be one
 
 ## Future-Proofing Excess
@@ -37,7 +39,7 @@ Detect over-engineered and overcomplicated code - code that works but is more co
 ## Premature Optimization
 
 - Caching rarely-accessed data - cache for data read once at startup
-- Custom data structures - complex structures when arrays/maps work
+- Custom data structures - complex structures when built-in collections work
 - Worker pools for occasional tasks - pooling for operations/hour
 - Connection pooling overkill - complex pooling for single connection
 
@@ -45,10 +47,10 @@ Detect over-engineered and overcomplicated code - code that works but is more co
 
 For each finding:
 
-- Location: file and line reference
-- Pattern: which over-engineering pattern detected
-- Problem: why this adds unnecessary complexity
-- Simplification: what simpler code would look like
-- Effort: trivial/small/medium/large
+- Location: `path/to/file:line`
+- Severity: high (wrong behaviour, a security hole or an unmet goal in normal use), medium (the same only in an edge case, or complexity that makes the next change harder), low (anything smaller)
+- Issue: what is wrong, naming the pattern from the lists above
+- Impact: what it breaks or costs
+- Fix: the change to make, with its effort (trivial, small, moderate or large)
 
-Report problems only - no positive observations.
+Report findings only - no positive observations.

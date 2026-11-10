@@ -7,14 +7,15 @@ description: >-
   or a fixed set of literals, status/state handling, reducers, or conditional JSX that
   picks a component/element by variant. Use it to convert a switch to match, to add an
   exhaustiveness guarantee, or to look up the right P combinator (P.select, P.union,
-  P.when, P.string, P.number, P.instanceOf, P.optional, isMatching). This project
-  standardises on ts-pattern, so prefer match over hand-rolled switch/if-else here.
+  P.when, P.string, P.number, P.instanceOf, P.optional) or isMatching. This project
+  standardises on ts-pattern for branching over a union or a fixed set of literals.
 ---
 
 # ts-pattern in this project
 
-`ts-pattern` (`^5.9.0`) is the standard way to branch in this codebase. It is already a
-dependency — import from it directly:
+`ts-pattern` is the standard way to branch over a union or a fixed set of literals
+in this codebase; the exceptions are listed below. It is already a dependency — import from it
+directly:
 
 ```ts
 import { match, P } from "ts-pattern";
@@ -25,8 +26,9 @@ import { match, P } from "ts-pattern";
 The payoff is `.exhaustive()`. When you match over a known union and close with it, TypeScript
 makes "you forgot a case" a **compile error**. Add a new variant to the union and the build
 breaks at every `match` that doesn't handle it — you get a to-do list from the compiler instead
-of a runtime surprise in production. A `switch` gives you no such guarantee (a missing `case`
-just falls through or hits `default`), and an `if/else` chain gives you even less.
+of a runtime surprise in production. A `switch` is checked only by accident — when every `case`
+returns and the function declares its return type; a `default`, an inferred return type or a
+side-effect `switch` hides the missing `case` — and an `if/else` chain gives you even less.
 
 The secondary payoff is inference: `P.select()` extracts a value and hands your callback the
 correctly narrowed type, so you branch and destructure in one place without casts.
@@ -113,12 +115,20 @@ const html = match(content)
 Don't drop back to `switch` the moment a case needs a runtime condition. Two ways:
 
 ```ts
+// predicate as the middle argument of .with — it receives the whole matched value,
+// not a P.select() capture. A guarded branch does not count toward .exhaustive():
+// follow it with an unguarded branch for the same variant.
 match(input)
-  // predicate as the middle argument of .with:
-  .with({ kind: "num", value: P.select() }, (v) => v > 100, () => "big")
-  // or P.when for a standalone predicate branch:
-  .with(P.when((x): x is Even => x % 2 === 0), () => "even")
-  .otherwise(() => "other");
+  .with({ kind: "num" }, ({ value }) => value > 100, () => "big")
+  .with({ kind: "num" }, () => "small")
+  .with({ kind: "str" }, () => "text")
+  .exhaustive();
+
+// or P.when for a standalone predicate branch on an open input:
+match(count)
+  .with(0, () => "none")
+  .with(P.when((n) => n % 2 === 0), () => "even")
+  .otherwise(() => "odd");
 ```
 
 ## The P combinator catalogue
@@ -140,10 +150,10 @@ match(input)
 | `P.select()` / `P.select("name")` | capture and narrow (see above) |
 | `P.when(predicate)` | a custom type-guard branch |
 
-This is the working subset — the full, versioned list (`P.map`, `P.set`, `P.intersection`,
-string/number predicate methods, etc.) is in the official docs:
-https://github.com/gvergnaud/ts-pattern — verify there before using a combinator you're unsure of,
-rather than guessing.
+This is the working subset. The installed version decides what exists: the full list (`P.map`,
+`P.set`, `P.intersection`, string/number predicate methods, etc.) is in
+`node_modules/ts-pattern/README.md` — verify there before using a combinator the codebase does
+not use yet, rather than guessing.
 
 ## Error handling with P.instanceOf
 
@@ -189,7 +199,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, count: action.value };
     case "reset":
       return { ...state, count: 0 };
-    // forget a case here and nothing complains
+    default:
+      return state; // a new Action variant lands here and nothing complains
   }
 }
 ```
@@ -211,5 +222,7 @@ function reducer(state: State, action: Action): State {
 - **`.otherwise()` on a closed union.** It compiles today and hides the missing branch tomorrow.
   Use `.exhaustive()` so new variants surface as errors.
 - **Falling back to `switch` for a guarded case.** Use the predicate arg of `.with` or `P.when`.
-- **Over-applying it.** A lone `if`/guard clause / ternary should stay plain (see "When not to").
-- **Re-`import`ing per branch or aliasing `P`.** One `import { match, P } from "ts-pattern";` per file.
+- **Over-applying it.** A lone `if`/guard clause / ternary should stay plain (see "When to use
+  it — and when not to").
+- **Splitting the import or aliasing `P`.** One `ts-pattern` import per file, naming everything
+  the file uses (`match`, `P`, `isMatching`).

@@ -7,14 +7,19 @@ You prioritize readable, explicit code over overly compact solutions. This is a 
 
 # Knowledge
 
-- follow existing code style in the codebase
+- these rules govern the code you write or change; where the surrounding code consistently follows a different convention, follow it - Comments and Type Safety apply either way
 
 # Coding Style
 
 ## Comments
 
-- NEVER write comments in code. The only exceptions are `TODO` and `FIXME`
-- names, types and structure must carry the intent
+Code reads without comments by default: names, types and structure carry the intent.
+
+- an urge to comment is a signal to rewrite first: rename, extract a named constant or function, or encode the constraint in a type
+- a comment earns its line only as a _why_ the code cannot express: the cause of a workaround, a non-obvious constraint or invariant, a link to the bug or spec behind a decision
+- a comment describes the code as it stands, in one or two lines; the history of a change goes to the commit message
+- JSDoc passes the same test: it states what the signature cannot (units, side effects, thrown errors)
+- existing comments stay; one that your change makes false is updated or deleted
 - every stub, mock or unwired handler carries a one-line `TODO` naming what completes it
 
 ## Style Guide
@@ -22,9 +27,8 @@ You prioritize readable, explicit code over overly compact solutions. This is a 
 ### General Principles
 
 - Prefer types over interfaces
-- Keep things in one function unless composable or reusable
+- Keep things in one function unless composable, reusable, or the extracted function's name replaces a comment
 - Use proper error handling patterns (avoid try/catch when possible)
-- Prefer single word variable names where possible
 - Rely on type inference when possible; avoid explicit type annotations or interfaces unless necessary for exports or clarity
 - Prefer functional array methods (flatMap, filter, map) over for loops; use type guards on filter to maintain type inference downstream
 - Prefer guard clauses over nested conditionals
@@ -33,8 +37,7 @@ You prioritize readable, explicit code over overly compact solutions. This is a 
 - Eliminating redundant code and abstractions
 - Improving readability through clear variable and function names
 - Consolidating related logic
-- Removing unnecessary comments that describe obvious code
-- IMPORTANT: Avoid nested ternary operators - prefer switch statements or if/else chains for multiple conditions or use ts-pattern if available
+- IMPORTANT: Avoid nested ternary operators - for multiple conditions use `match` from ts-pattern when the project depends on it, otherwise a `switch` or early returns
 - Choose clarity over brevity - explicit code is often better than overly compact code
 
 ### Type Safety
@@ -60,27 +63,27 @@ Derive types from the data that produces them (`keyof typeof`, `ReturnType<typeo
 ### Naming
 
 Maintain consistent naming conventions
-Prefer single word names for variables and functions. Only use multiple words if necessary.
+Prefer single word names for variables and functions. Use multiple words only when one word is ambiguous in its scope.
 
 ```ts
 // Good
 const foo = 1;
-function journal(dir: string) {}
+const journal = (dir: string) => {};
 
 // Bad
 const fooBar = 1;
-function prepareJournal(dir: string) {}
+const prepareJournal = (dir: string) => {};
 ```
 
-Reduce total variable count by inlining when a value is only used once.
+Reduce total variable count by inlining when a value is only used once, unless its name says something the expression does not.
 
 ```ts
 // Good
-const journal = await Bun.file(path.join(dir, "journal.json")).json();
+const journal = await readFile(path.join(dir, "journal.json"), "utf8");
 
 // Bad
 const journalPath = path.join(dir, "journal.json");
-const journal = await Bun.file(journalPath).json();
+const journal = await readFile(journalPath, "utf8");
 ```
 
 ### Variables
@@ -103,16 +106,16 @@ Avoid `else` statements. Prefer early returns.
 
 ```ts
 // Good
-function foo() {
+const foo = () => {
   if (condition) return 1;
   return 2;
-}
+};
 
 // Bad
-function foo() {
+const foo = () => {
   if (condition) return 1;
   else return 2;
-}
+};
 ```
 
 **Maintain Balance**: Avoid over-simplification that could:

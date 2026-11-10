@@ -12,7 +12,7 @@ A Claude Code plugin marketplace. `.claude-plugin/marketplace.json` lists every 
 - Every skill plugin's manifest `name` is `zonterone-skills`. The manifest name is the namespace, so skills load as `zonterone-skills:<skill>`. The marketplace entry name is the install key and equals the folder name; `displayName` repeats it for the `/plugin` UI.
 - A composite plugin takes its own unique manifest `name`. Claude Code registers hooks for one plugin per manifest name.
 - Leave `version` out of every manifest and entry. The commit SHA is the version, and each push to `main` reaches users as an update; a written `version` pins users until it is bumped.
-- Display fields (`description`, `author`, `license`, `homepage`) live in `plugin.json`. A marketplace entry holds `name` and `source` only.
+- Display fields (`description`, `author`, `repository`, `license`) live in `plugin.json`; a skill adapted from an upstream also carries `homepage` pointing at it. A marketplace entry holds `name` and `source` only.
 - A bundle is a manifest with `dependencies` and no components. `dependencies` lists marketplace entry names.
 
 ## Adding a skill plugin
