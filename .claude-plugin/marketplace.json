@@ -7,6 +7,7 @@
     { "name": "ts-code-style", "source": "./skills/ts-code-style" },
     { "name": "karpathy-guidelines", "source": "./skills/karpathy-guidelines" },
     { "name": "deep-code-review", "source": "./skills/deep-code-review" },
+    { "name": "react-code-style", "source": "./skills/react-code-style" },
     { "name": "neverthrow", "source": "./skills/neverthrow" },
     { "name": "ts-pattern", "source": "./skills/ts-pattern" }
   ]
